@@ -25,11 +25,11 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
     private var isFiltering: Bool {
         return searchController.isActive && !searchBarIsEmpty
     }
-     
+    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var reversedSortingButton: UIBarButtonItem!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
-      
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -45,33 +45,29 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     // MARK: - Table view data source
     
-     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if isFiltering {
             return filteredPlaces.count
         }
         
-        return places.isEmpty ? 0 : places.count
+        return places.count
     }
     
-     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-       
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CustomTableViewCell
-        var place = Place()
-        if isFiltering {
-            place = filteredPlaces[indexPath.row]
-        }else {
-            place = places[indexPath.row]
-            
-        }
+        
+        let place = isEditing ? filteredPlaces[indexPath.row] : places[indexPath.row]
         
         cell.nameLabel?.text = place.name
         cell.locationLabel.text = place.location
         cell.typeLabel.text = place.type
         cell.imageOfPlace.image = UIImage(data: place.imageData!)
-        cell.imageOfPlace?.layer.cornerRadius = cell.imageOfPlace.frame.size.height / 2
-        cell.imageOfPlace?.clipsToBounds = true
-
+        cell.cosmosView.rating = place.rating
+        
+        
+        
         return cell
     }
     
@@ -79,7 +75,7 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
     }
-     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         
         if editingStyle == .delete {
             let place = places[indexPath.row]
@@ -91,23 +87,19 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     
     // MARK: - Navigation
-   
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetails" {
             guard let indexPath = tableView.indexPathForSelectedRow else { return }
-            let place: Place
-            if isFiltering {
-                place = filteredPlaces[indexPath.row]
-            } else {
-                place = places[indexPath.row]
-            }
+            let place = isFiltering ? filteredPlaces[indexPath.row] : places[indexPath.row]
+            
             let newPlaceVC = segue.destination as! NewPlaceViewController
             newPlaceVC.currentPLace = place
         }
     }
     
     
-   
+    
     @IBAction func unwindSegue(_ segue: UIStoryboardSegue) {
         
         guard let newPlaceVC = segue.source as? NewPlaceViewController else { return }
@@ -117,13 +109,13 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
     }
     
-
+    
     @IBAction func sortSelection(_ sender: UISegmentedControl) {
         
         sorting()
         
     }
-
+    
     @IBAction func reversedSorting(_ sender: UIBarButtonItem) {
         ascendingSorting.toggle()
         if ascendingSorting {
@@ -165,3 +157,4 @@ extension MainViewController: UISearchResultsUpdating {
     
     
 }
+
