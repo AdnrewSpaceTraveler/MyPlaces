@@ -9,7 +9,7 @@
 import UIKit
 
 class NewPlaceViewController: UITableViewController {
-
+    
     var currentPLace: Place!
     
     var imageIsChanged = false
@@ -34,7 +34,7 @@ class NewPlaceViewController: UITableViewController {
         setupEditScreen()
     }
     
-//   MARK: Tablew View delegate
+    //   MARK: Tablew View delegate
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 0 {
             
@@ -76,25 +76,19 @@ class NewPlaceViewController: UITableViewController {
     // MARK: NAvigation
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier != "showMap" {
-            return
-        }
+        if segue.identifier != "showMap" { return }
         let mapVC = segue.destination as! MapViewController
-        mapVC.place = currentPLace
+        mapVC.place.name = placeName.text!
+        mapVC.place.location = placeLocation.text
+        mapVC.place.type = placeType.text
+        mapVC.place.imageData = placeImage.image?.pngData()
         
     }
     
     func savePlace() {
         
         
-        var image: UIImage?
-        
-        if imageIsChanged {
-            image = placeImage.image
-        } else {
-            image = #imageLiteral(resourceName: "imagePlaceholder")
-        }
-        
+        let image = imageIsChanged ? placeImage.image : #imageLiteral(resourceName: "imagePlaceholder")
         let imageData = image?.pngData()
         
         let newPlace = Place(name: placeName.text!,
@@ -130,7 +124,7 @@ class NewPlaceViewController: UITableViewController {
             ratingControl.rating = Int(currentPLace.rating)
             
             
-        
+            
         }
     }
     
@@ -141,7 +135,7 @@ class NewPlaceViewController: UITableViewController {
         navigationItem.leftBarButtonItem = nil
         title = currentPLace?.name
         saveButton.isEnabled = true
-
+        
     }
     
     
@@ -200,5 +194,5 @@ extension NewPlaceViewController: UIImagePickerControllerDelegate, UINavigationC
     }
 }
 
-    
+
 
