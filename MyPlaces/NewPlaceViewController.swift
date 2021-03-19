@@ -73,6 +73,17 @@ class NewPlaceViewController: UITableViewController {
         
     }
     
+    // MARK: NAvigation
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier != "showMap" {
+            return
+        }
+        let mapVC = segue.destination as! MapViewController
+        mapVC.place = currentPLace
+        
+    }
+    
     func savePlace() {
         
         
